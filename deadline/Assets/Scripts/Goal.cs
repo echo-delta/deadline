@@ -48,6 +48,7 @@ public class Goal : MonoBehaviour {
 			if (act_button_pressed) {
 				popup_text.text = GOAL_DONE;
 				goal_done = true;
+				coll.gameObject.GetComponent<PlayerMovement> ().speed = 0;
 				StartCoroutine (DisablePopUp (2));
 			}
 		}

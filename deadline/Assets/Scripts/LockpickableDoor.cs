@@ -12,6 +12,7 @@ public class LockpickableDoor : MonoBehaviour {
 	private bool act_button_pressed;	// true when action button is pressed
 	private bool puzzle_started;		// puzzle play status
 	private Text popup_text;			// text displayed on message display
+	private float player_speed;			// saved to be returned after puzzle
 
 	// const strings
 	private const string LOCKPICK = "Press E to lockpick";
@@ -48,7 +49,7 @@ public class LockpickableDoor : MonoBehaviour {
 			if (act_button_pressed) {
 				popup_message.alpha = 0;
 				puzzle_started = true;
-				lockpick_puzzle.GetComponent<LockpickPuzzle> ().StartPuzzle (gameObject);
+				lockpick_puzzle.GetComponent<LockpickPuzzle> ().StartPuzzle (gameObject, coll.gameObject);
 			}
 		}
 	

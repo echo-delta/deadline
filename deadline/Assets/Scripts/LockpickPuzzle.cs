@@ -7,7 +7,6 @@ public class LockpickPuzzle : MonoBehaviour {
 	public float speed = 1;						// lockpick travel speed 
 	public float lockpick_treshold = 1.58f;		// lockpick movement treshold
 	public float win_treshold = 0.15f;			// lockpick win treshold
-	public Transform player;					// player position	
 	public Transform lockpick;					// the lockpick
 
 	private Transform lockpick_bar;				// the bar
@@ -15,6 +14,8 @@ public class LockpickPuzzle : MonoBehaviour {
 	private bool puzzle_started;				// play status
 	private Vector3 lockpick_init;				// lockpick initial position
 	private GameObject source_door;				// door that activate this puzzle
+	private GameObject source_player;			// player object
+	private float temp_player_speed;				// saved player speed
 
 	// Use this for initialization
 	void Start () {
@@ -45,10 +46,15 @@ public class LockpickPuzzle : MonoBehaviour {
 	}
 
 	// start puzzle
-	public void StartPuzzle (GameObject door) {
+	public void StartPuzzle (GameObject door, GameObject player) {
 
 		source_door = door;
-		transform.position = new Vector3 (player.position.x, player.position.y, -2);
+		source_player = player;
+
+		temp_player_speed = source_player.GetComponent<PlayerMovement> ().speed;
+		player.GetComponent<PlayerMovement> ().speed = 0;
+		transform.position = new Vector3 (source_player.transform.position.x, 
+			source_player.transform.position.y, -2);
 		puzzle_started = true;
 		lockpick_init = new Vector3 (lockpick.position.x, 
 			lockpick.position.y, lockpick.position.z);
@@ -83,8 +89,10 @@ public class LockpickPuzzle : MonoBehaviour {
 			source_door.SetActive (false);
 		}
 
+		source_player.GetComponent<PlayerMovement> ().speed = temp_player_speed;
 		lockpick.position = lockpick_init;
-		transform.position = new Vector3 (player.position.x, player.position.y, 2);
+		transform.position = new Vector3 (source_player.transform.position.x, 
+			source_player.transform.position.y, 2);
 
 	}
 

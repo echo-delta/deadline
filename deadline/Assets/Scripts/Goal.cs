@@ -14,7 +14,7 @@ public class Goal : MonoBehaviour {
 
 	// const strings
 	private const string GOAL_ACT = "Press E to handle your work!";
-	private const string GOAL_DONE = "Homework handled!";
+	private const string GOAL_DONE = "Homework handled! Press Space to restart.";
 
 	// Use this for initialization
 	void Start () {
@@ -29,10 +29,17 @@ public class Goal : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+		// change status on buttonpress
 		if (Input.GetKey (KeyCode.E)) {
 			act_button_pressed = true;
 		} else {
 			act_button_pressed = false;
+		}
+
+		// restart game on buttonpress
+		if (Input.GetKeyDown (KeyCode.Space) && goal_done) {
+			Time.timeScale = 1;
+			Application.LoadLevel ("prototype_scene");
 		}
 
 	}
@@ -48,8 +55,7 @@ public class Goal : MonoBehaviour {
 			if (act_button_pressed) {
 				popup_text.text = GOAL_DONE;
 				goal_done = true;
-				coll.gameObject.GetComponent<PlayerMovement> ().speed = 0;
-				StartCoroutine (DisablePopUp (2));
+				Time.timeScale = 0;
 			}
 		}
 

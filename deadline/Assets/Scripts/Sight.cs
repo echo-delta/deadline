@@ -9,10 +9,11 @@ public class Sight : MonoBehaviour {
 	public CanvasGroup popup_message;	// message display
 
 	private bool game_lost;				// true when goal already done
+	private bool act_button_pressed;	// true if space pressed
 	private Text popup_text;			// text displayed on message display
 
 	// const strings
-	private const string GAME_LOST = "You got caught!";
+	private const string GAME_LOST = "You got caught! Press space to restart.";
 
 
 	// Use this for initialization
@@ -26,7 +27,13 @@ public class Sight : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+
+		// change on buttonpress
+		if (Input.GetKeyDown (KeyCode.Space) && game_lost) {
+			Time.timeScale = 1;
+			Application.LoadLevel ("prototype_scene");
+		} 
+
 	}
 
 	// lose condition if touched by player
@@ -37,6 +44,7 @@ public class Sight : MonoBehaviour {
 			popup_message.alpha = 1;
 			popup_text.text = GAME_LOST;
 			game_lost = true;
+			Time.timeScale = 0;
 		}
 
 	}

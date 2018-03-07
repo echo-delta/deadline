@@ -7,6 +7,7 @@ public class CameraMovement : MonoBehaviour {
 	public Transform target;			// target to be tracked
 	public float speed = 1;				// tracking speed
 	public float distance = 10;			// camera distance to target
+	public float zoom = 1;				// camera zoom
 
 	private Camera cam;					// camera component
 	private Vector3 vector_distance;	// vector made from distance
@@ -27,7 +28,7 @@ public class CameraMovement : MonoBehaviour {
 	void Update () {
 
 		// manage camera size
-		cam.orthographicSize = (Screen.height / 100f);
+		cam.orthographicSize = (Screen.height ) / (100f * zoom);
 
 		// track target
 		if (target) {

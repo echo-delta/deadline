@@ -22,7 +22,7 @@ ExportedObj/
 *.user
 *.unityproj
 *.booproj
-*.meta
+# *.meta
 *.vscode
 
 # ============ #
@@ -49,5 +49,5 @@ sysinfo.txt
 
 # Ignore scenes and meta files
 # *.unity*
-*.meta
+# *.meta
 /ProjectSettings

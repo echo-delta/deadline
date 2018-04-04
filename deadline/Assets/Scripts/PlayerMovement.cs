@@ -9,12 +9,15 @@ public class PlayerMovement : MonoBehaviour {
 	private Rigidbody2D rBody;			// rigidbody for physics
 	private int x, y;					// used for movement vector
 	private Vector2 movement_vector;	// used for determining movement
+	private Animator anim;
 
 	// Use this for initialization
 	void Start () {
 
 		// initialize variables
 		rBody = GetComponent<Rigidbody2D> ();
+		anim = GetComponent<Animator> ();
+		anim.SetFloat ("input_y", -1);
 		
 	}
 	
@@ -40,8 +43,13 @@ public class PlayerMovement : MonoBehaviour {
 
 		// update position
 		if (movement_vector != Vector2.zero) {
-			rBody.MovePosition (rBody.position + 
-				movement_vector * Time.deltaTime * speed);
+			anim.SetBool ("iswalking", true);
+			anim.SetFloat ("input_x", movement_vector.x);
+			anim.SetFloat ("input_y", movement_vector.y);
+			rBody.MovePosition (rBody.position +
+			movement_vector * Time.deltaTime * speed);
+		} else {
+			anim.SetBool ("iswalking", false);
 		}
 
 		// reset x and y

@@ -1315,8 +1315,8 @@ MonoBehaviour:
   moveSpeed: 1
   rotateSpeed: 90
   fovComplexity: 1
-  fovAngle: 90
-  fovRad: 2
+  fovAngle: 80
+  fovRad: 1
   lineSizeStart: 0.05
   lineSizeEnd: 0
   popUpMsg: {fileID: 658776963}
@@ -1563,6 +1563,7 @@ GameObject:
   m_Component:
   - component: {fileID: 971988816}
   - component: {fileID: 971988817}
+  - component: {fileID: 971988818}
   m_Layer: 5
   m_Name: Pause Menu
   m_TagString: Untagged
@@ -1604,6 +1605,17 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &971988818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 971988815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73679752d865c214da403d6d5fac6d42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &982886754
 GameObject:
   m_ObjectHideFlags: 0

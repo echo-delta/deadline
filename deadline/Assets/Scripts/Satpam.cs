@@ -45,15 +45,15 @@ public class Satpam : MonoBehaviour {
 		angleSet = false;
 		onDelay = false;
 
-		sprite = transform.GetChild (3).gameObject;
+		sprite = transform.GetChild (2).gameObject;
 		movement = sprite.GetComponent<SatpamSprite>();
 		initRot = sprite.transform.rotation;
 		updateSpriteRotation ();
 
-		sightRight = transform.GetChild (1).gameObject.GetComponent<LineRenderer> ();
+		sightRight = transform.GetChild (0).gameObject.GetComponent<LineRenderer> ();
 		sightRight.startWidth = lineSizeStart;
 		sightRight.endWidth = lineSizeEnd;
-		sightLeft = transform.GetChild (2).gameObject.GetComponent<LineRenderer> ();
+		sightLeft = transform.GetChild (1).gameObject.GetComponent<LineRenderer> ();
 		sightLeft.startWidth = lineSizeStart;
 		sightLeft.endWidth = lineSizeEnd;
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 using UnityEngine.UI;
 
@@ -39,7 +40,7 @@ public class Goal : MonoBehaviour {
 		// restart game on buttonpress
 		if (Input.GetKeyDown (KeyCode.Space) && goal_done) {
 			Time.timeScale = 1;
-			Application.LoadLevel ("prototype_scene");
+			SceneManager.LoadScene ("prototype_scene");
 		}
 
 	}

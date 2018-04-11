@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 using UnityEngine.UI;
 
@@ -22,7 +23,7 @@ public class Sight : MonoBehaviour {
 		// initialize variable
 		popup_text = popup_message.GetComponentInChildren<Text> ();
 		game_lost = false;
-		
+
 	}
 	
 	// Update is called once per frame
@@ -31,7 +32,7 @@ public class Sight : MonoBehaviour {
 		// change on buttonpress
 		if (Input.GetKeyDown (KeyCode.Space) && game_lost) {
 			Time.timeScale = 1;
-			Application.LoadLevel ("prototype_scene");
+			SceneManager.LoadScene ("prototype_scene");
 		} 
 
 	}
@@ -41,10 +42,28 @@ public class Sight : MonoBehaviour {
 	
 		// display popup on player contact and receive key press
 		if (coll.gameObject.tag == "Player" && !game_lost) {
-			popup_message.alpha = 1;
-			popup_text.text = GAME_LOST;
-			game_lost = true;
-			Time.timeScale = 0;
+			Debug.Log ("got player");
+			Debug.DrawRay (transform.parent.transform.position, coll.transform.position - transform.parent.transform.position, Color.red, 1000, true);
+			GetComponent<EdgeCollider2D> ().enabled = false;
+			RaycastHit2D raycastHit = Physics2D.Raycast (transform.parent.transform.position, coll.transform.position - transform.parent.transform.position);
+			if (raycastHit) {
+				if (raycastHit.collider.name == "Player") {
+					Debug.Log ("hit player");
+					popup_message.alpha = 1;
+					popup_text.text = GAME_LOST;
+					game_lost = true;
+					Time.timeScale = 0;				
+				} else {
+					Debug.Log ("hit " + raycastHit.collider.name);
+					GetComponent<EdgeCollider2D> ().enabled = true;
+				}
+
+			} else {
+				Debug.Log ("hit nothing");
+			}
+				
+		} else {
+			Debug.Log ("hit " + coll.gameObject.name);
 		}
 
 	}

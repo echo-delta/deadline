@@ -62,9 +62,7 @@ public class PlayerMovement : MonoBehaviour {
 	void OnTriggerEnter2D (Collider2D coll) {
 
 		// display popup on player contact and receive key press
-		if (coll.gameObject.tag == "Sight") {
-			speed = 0;
-		}
+
 
 	}
 

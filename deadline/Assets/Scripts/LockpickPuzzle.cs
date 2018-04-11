@@ -9,7 +9,6 @@ public class LockpickPuzzle : MonoBehaviour {
 	public float win_treshold = 0.15f;			// lockpick win treshold
 	public Transform lockpick;					// the lockpick
 
-	private Transform lockpick_bar;				// the bar
 	private int lockpick_direction;				// 1 = right, 0 = left
 	private bool puzzle_started;				// play status
 	private bool init_assigned;					// true if lockpick_init is assigned
@@ -22,7 +21,6 @@ public class LockpickPuzzle : MonoBehaviour {
 	void Start () {
 
 		// initialize variables
-		lockpick_bar = transform.GetChild(0);
 		lockpick_direction = 0;
 		puzzle_started = false;
 		init_assigned = false;

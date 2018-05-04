@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 using SatpamBehavior;
 
@@ -12,7 +13,6 @@ public class Satpam : MonoBehaviour {
 	public float angleTreshold = 1;			// max angle delta
 	public float moveSpeed = 1;				// movement speed
 	public float rotateSpeed = 50;			// rotation speed
-	public float fovComplexity = 10;
 	public float fovAngle = 90;
 	public float fovRad = 1;
 	public float lineSizeStart = 0.05f;
@@ -32,6 +32,9 @@ public class Satpam : MonoBehaviour {
 	private LineRenderer sightRight, sightLeft;
 	private GameObject player;
 	private Text popUpTxt;
+
+	// to be deleted
+	private bool gameOver = false;
 
 	private const string GAME_LOST = "You got caught! Press space to restart.";
 
@@ -69,7 +72,14 @@ public class Satpam : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		checkPlayer ();
+		if (!gameOver) {
+			checkPlayer ();
+		} else {
+			if (Input.GetKeyDown (KeyCode.Space)) {
+				Time.timeScale = 1;
+				SceneManager.LoadScene ("prototype_scene");
+			}
+		}
 
 		if (!onDelay) {
 			if (idx < moveset.Length) {
@@ -275,6 +285,7 @@ public class Satpam : MonoBehaviour {
 						Debug.Log ("hit player");
 						popUpMsg.alpha = 1;
 						popUpTxt.text = GAME_LOST;
+						gameOver = true;
 						Time.timeScale = 0;				
 					} else {
 						Debug.Log ("hit " + raycastHit.collider.name);

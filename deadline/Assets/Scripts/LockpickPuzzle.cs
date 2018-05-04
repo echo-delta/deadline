@@ -13,6 +13,7 @@ public class LockpickPuzzle : MonoBehaviour {
 	private bool puzzle_started;				// play status
 	private bool init_assigned;					// true if lockpick_init is assigned
 	private Vector3 lockpick_init;				// lockpick initial position
+	private Vector3 initPos;					// Puzzle init position
 	private GameObject source_door;				// door that activate this puzzle
 	private GameObject source_player;			// player object
 	private float temp_player_speed;			// saved player speed
@@ -21,6 +22,7 @@ public class LockpickPuzzle : MonoBehaviour {
 	void Start () {
 
 		// initialize variables
+		initPos = transform.position;
 		lockpick_direction = 0;
 		puzzle_started = false;
 		init_assigned = false;
@@ -94,8 +96,7 @@ public class LockpickPuzzle : MonoBehaviour {
 
 		source_player.GetComponent<PlayerMovement> ().speed = temp_player_speed;
 		lockpick.position = lockpick_init;
-		transform.position = new Vector3 (source_player.transform.position.x, 
-			source_player.transform.position.y, 2);
+		transform.position = initPos;
 
 	}
 

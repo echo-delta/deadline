@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour {
 	private Vector2 movement_vector;	// used for determining movement
 	private Animator anim;
 	private LevelManager manager;
+	private AudioSource audioSource;
 
 	// Use this for initialization
 	void Start () {
@@ -19,6 +20,7 @@ public class PlayerMovement : MonoBehaviour {
 		rBody = GetComponent<Rigidbody2D> ();
 		anim = GetComponent<Animator> ();
 		anim.SetFloat ("input_y", -1);
+		audioSource = GetComponent<AudioSource> ();
 		manager = GameObject.Find ("LevelManager").GetComponent<LevelManager> ();
 
 	}
@@ -47,18 +49,25 @@ public class PlayerMovement : MonoBehaviour {
 
 			// update position
 			if (movement_vector != Vector2.zero) {
+				if (!audioSource.isPlaying)
+					audioSource.Play ();
 				anim.SetBool ("iswalking", true);
 				anim.SetFloat ("input_x", movement_vector.x);
 				anim.SetFloat ("input_y", movement_vector.y);
 				rBody.MovePosition (rBody.position +
 				movement_vector * Time.deltaTime * speed);
 			} else {
+				if (audioSource.isPlaying)
+					audioSource.Stop ();
 				anim.SetBool ("iswalking", false);
 			}
 
 			// reset x and y
 			x = 0;
 			y = 0;
+		} else {
+			if (audioSource.isPlaying)
+				audioSource.Stop ();
 		}
 
 	}
@@ -72,6 +81,7 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	public void ResetPlayerSprite() {
+		anim.SetBool ("iswalking", false);
 		anim.SetFloat ("input_x", 0);
 		anim.SetFloat ("input_y", -1);
 	}

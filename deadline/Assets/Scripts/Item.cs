@@ -12,7 +12,6 @@ public class Item : MonoBehaviour {
 	void Start () {
 
 		manager = GameObject.Find ("InventoryManager").GetComponent<InventoryManager> ();
-
 	}
 	
 	// Update is called once per frame

@@ -20,8 +20,7 @@ public class WarpPoint : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D coll) {
 		if (coll.gameObject.tag == "Player") {
-			coll.transform.position = target.position;
-			Camera.main.transform.position = target.position;
+			StartCoroutine (manager.Warp (target.transform.position));
 		}
 	}
 

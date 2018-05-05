@@ -7,10 +7,12 @@ public class InventoryManager : MonoBehaviour {
 
 	public GameObject inventory;
 	public Sprite emptySprite;
+	public AudioClip grab;
 
 	private int itemCount = 0;
 	private Image[] items;
 	private int[] itemIds;
+	private AudioSource audioSource;
 
 	// Use this for initialization
 	void Start () {
@@ -20,6 +22,7 @@ public class InventoryManager : MonoBehaviour {
 			items[i] = inventory.transform.GetChild (i).GetComponent<Image>();
 			itemIds [i] = -1;
 		}
+		audioSource = GetComponent<AudioSource> ();
 	}
 	
 	// Update is called once per frame
@@ -34,6 +37,7 @@ public class InventoryManager : MonoBehaviour {
 	public void AddItem(int itemId, Sprite itemSprite) {
 
 		if (itemCount < 4) {
+			audioSource.PlayOneShot (grab);
 			items [itemCount].sprite = itemSprite;
 			itemIds [itemCount] = itemId;
 			itemCount++;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Locker : MonoBehaviour {
+public class HidingPlace : MonoBehaviour {
 
 	private LevelManager manager;
 	private bool act_button_pressed;	// true when action button is pressed

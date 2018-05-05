@@ -8,6 +8,8 @@ public class LockpickPuzzle : MonoBehaviour {
 	public float lockpick_treshold = 2f;		// lockpick movement treshold
 	public float win_treshold = 0.15f;			// lockpick win treshold
 	public Transform lockpick;					// the lockpick
+	public AudioClip fail;
+	public AudioClip success;
 
 	private int lockpick_direction;				// 1 = right, 0 = left
 	private bool puzzle_started;				// play status
@@ -17,6 +19,8 @@ public class LockpickPuzzle : MonoBehaviour {
 	private GameObject source_door;				// door that activate this puzzle
 	private GameObject source_player;			// player object
 	private float temp_player_speed;			// saved player speed
+	private AudioSource audioSource;
+	private LevelManager manager;
 
 	// Use this for initialization
 	void Start () {
@@ -26,6 +30,8 @@ public class LockpickPuzzle : MonoBehaviour {
 		lockpick_direction = 0;
 		puzzle_started = false;
 		init_assigned = false;
+		audioSource = GetComponent<AudioSource> ();
+		manager = GameObject.Find ("LevelManager").GetComponent<LevelManager> ();
 
 	}
 	
@@ -84,11 +90,17 @@ public class LockpickPuzzle : MonoBehaviour {
 
 	// end puzzle
 	void EndPuzzle() {
-		
+		manager.allowPlayerMovement = true;
+
 		puzzle_started = false;
 		if (lockpick.transform.position.x > (lockpick_init.x - win_treshold) &&
 		    lockpick.transform.position.x < (lockpick_init.x + win_treshold)) {
-			Destroy (source_door);
+			audioSource.PlayOneShot (success);
+			source_door.GetComponent<LockpickableDoor> ().OpenDoor ();
+		} else {
+			audioSource.PlayOneShot (fail);
+			source_door.GetComponent<LockpickableDoor> ().puzzle_started = false;
+
 		}
 			
 		source_player.GetComponent<PlayerMovement> ().speed = temp_player_speed;

@@ -20,6 +20,8 @@ public class Satpam : MonoBehaviour {
 	public CanvasGroup popUpMsg;
 	public int favoredItemId;
 	public float favorTime = 3;
+	public AudioClip bribe;
+	public AudioClip alert;
 
 	private int idx;						// current moveset index
 	private float currentAngle;				// current angle rotation
@@ -39,12 +41,13 @@ public class Satpam : MonoBehaviour {
 	private bool waitingInput = false;
 	private bool favored = false;
 	private Color defaultSightColor;
+	private AudioSource audioSource;
 
 	// to be deleted
 	private bool gameOver = false;
 
 	private const string GAME_LOST = "You got caught! Press space to restart.";
-	private const string GIVE_ITEM = "You got caught! But luckily you can use an item from your inventory!\nPress space to continue";
+	private const string GIVE_ITEM = "You used the donut to stall the guard! Press space to continue.";
 
 	int counter = 0;
 	// Use this for initialization
@@ -77,6 +80,7 @@ public class Satpam : MonoBehaviour {
 		manager = GameObject.Find ("LevelManager").GetComponent<LevelManager> ();
 		inventory = GameObject.Find ("InventoryManager").GetComponent<InventoryManager> ();
 
+		audioSource = GetComponent<AudioSource> ();
 	}
 
 	void LateUpdate() {
@@ -85,7 +89,7 @@ public class Satpam : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-
+		
 		if (waitingInput) {
 			if (Input.GetKeyDown(KeyCode.Space)) {
 				waitingInput = false;
@@ -95,7 +99,7 @@ public class Satpam : MonoBehaviour {
 				StartCoroutine (FavorCountdown ());
 			}
 		} else {
-
+			
 			if (!gameOver) {
 				checkPlayer ();
 			} else {
@@ -105,11 +109,12 @@ public class Satpam : MonoBehaviour {
 				}
 			}
 
-			if (!onDelay) {
+			if (!onDelay && !gameOver && !waitingInput) {
 				if (idx < moveset.Length) {
 					switch (moveset [idx].act) {
 					case "up":
 						{
+							if (!audioSource.isPlaying) audioSource.Play ();
 							if (!targetSet) {
 								target = new Vector3 (transform.position.x, transform.position.y + moveset [idx].distance,
 									transform.position.z);
@@ -132,6 +137,7 @@ public class Satpam : MonoBehaviour {
 
 					case "down":
 						{
+							if (!audioSource.isPlaying) audioSource.Play ();
 							if (!targetSet) {
 								target = new Vector3 (transform.position.x, transform.position.y - moveset [idx].distance,
 									transform.position.z);
@@ -154,6 +160,7 @@ public class Satpam : MonoBehaviour {
 
 					case "right":
 						{
+							if (!audioSource.isPlaying) audioSource.Play ();
 							if (!targetSet) {
 								target = new Vector3 (transform.position.x + moveset [idx].distance, transform.position.y,
 									transform.position.z);
@@ -176,6 +183,7 @@ public class Satpam : MonoBehaviour {
 
 					case "left":
 						{
+							if (!audioSource.isPlaying) audioSource.Play ();
 							if (!targetSet) {
 								target = new Vector3 (transform.position.x - moveset [idx].distance, transform.position.y,
 									transform.position.z);
@@ -197,6 +205,7 @@ public class Satpam : MonoBehaviour {
 
 					case "rotate":
 						{
+							if (audioSource.isPlaying) audioSource.Stop ();
 							sprite.transform.rotation = initRot;
 							if (!angleSet) {
 								angle = Quaternion.Euler (transform.eulerAngles.x, transform.eulerAngles.y,
@@ -233,6 +242,8 @@ public class Satpam : MonoBehaviour {
 	}
 
 	IEnumerator Wait(float sec) {
+		if (audioSource.isPlaying) audioSource.Stop ();
+
 		onDelay = true;
 		yield return new WaitForSeconds(sec);
 		onDelay = false;
@@ -303,7 +314,10 @@ public class Satpam : MonoBehaviour {
 					player.transform.position - transform.position);
 				if (raycastHit) {
 					if (raycastHit.collider.name == "Player" && !manager.playerIsHiding && !favored) {
+						
 						if (inventory.HaveItem (favoredItemId)) {
+							if (audioSource.isPlaying) audioSource.Stop ();
+							audioSource.PlayOneShot (bribe);
 							popUpMsg.alpha = 1;
 							popUpTxt.text = GIVE_ITEM;
 							favored = true;
@@ -315,10 +329,14 @@ public class Satpam : MonoBehaviour {
 							waitingInput = true;
 							Time.timeScale = 0;	
 						} else {
+							if (audioSource.isPlaying) audioSource.Stop ();
+							Debug.Log ("playing sound");
+							audioSource.PlayOneShot (alert);
 							popUpMsg.alpha = 1;
 							popUpTxt.text = GAME_LOST;
 							gameOver = true;
 							Time.timeScale = 0;	
+							manager.allowPlayerMovement = false;
 						}
 					}
 
@@ -334,6 +352,8 @@ public class Satpam : MonoBehaviour {
 		// display popup on player contact and receive key press
 		if (coll.gameObject.name == "Player" && !manager.playerIsHiding && !favored) {
 			if (inventory.HaveItem (favoredItemId)) {
+				if (audioSource.isPlaying) audioSource.Stop ();
+				audioSource.PlayOneShot (bribe);
 				popUpMsg.alpha = 1;
 				popUpTxt.text = GIVE_ITEM;
 				favored = true;
@@ -345,10 +365,15 @@ public class Satpam : MonoBehaviour {
 
 				Time.timeScale = 0;	
 			} else {
+				if (audioSource.isPlaying) audioSource.Stop ();
+				Debug.Log ("playing sound");
+				audioSource.PlayOneShot (alert);
 				popUpMsg.alpha = 1;
 				popUpTxt.text = GAME_LOST;
 				gameOver = true;
 				Time.timeScale = 0;	
+				manager.allowPlayerMovement = false;
+
 			}
 		}
 

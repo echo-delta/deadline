@@ -18,6 +18,8 @@ public class Satpam : MonoBehaviour {
 	public float lineSizeStart = 0.05f;
 	public float lineSizeEnd = 0;
 	public CanvasGroup popUpMsg;
+	public int favoredItemId;
+	public float favorTime = 3;
 
 	private int idx;						// current moveset index
 	private float currentAngle;				// current angle rotation
@@ -33,11 +35,16 @@ public class Satpam : MonoBehaviour {
 	private GameObject player;
 	private Text popUpTxt;
 	private LevelManager manager;
+	private InventoryManager inventory;
+	private bool waitingInput = false;
+	private bool favored = false;
+	private Color defaultSightColor;
 
 	// to be deleted
 	private bool gameOver = false;
 
 	private const string GAME_LOST = "You got caught! Press space to restart.";
+	private const string GIVE_ITEM = "You got caught! But luckily you can use an item from your inventory!\nPress space to continue";
 
 	int counter = 0;
 	// Use this for initialization
@@ -61,11 +68,14 @@ public class Satpam : MonoBehaviour {
 		sightLeft.startWidth = lineSizeStart;
 		sightLeft.endWidth = lineSizeEnd;
 
+		defaultSightColor = sightLeft.startColor;
+
 		player = GameObject.FindGameObjectWithTag ("Player");
 
 		popUpTxt = popUpMsg.GetComponentInChildren<Text> ();
 
 		manager = GameObject.Find ("LevelManager").GetComponent<LevelManager> ();
+		inventory = GameObject.Find ("InventoryManager").GetComponent<InventoryManager> ();
 
 	}
 
@@ -76,136 +86,147 @@ public class Satpam : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if (!gameOver) {
-			checkPlayer ();
-		} else {
-			if (Input.GetKeyDown (KeyCode.Space)) {
+		if (waitingInput) {
+			if (Input.GetKeyDown(KeyCode.Space)) {
+				waitingInput = false;
+				popUpMsg.alpha = 0;
 				Time.timeScale = 1;
-				SceneManager.LoadScene ("prototype_scene");
+				inventory.RemoveItem (favoredItemId);
+				StartCoroutine (FavorCountdown ());
 			}
-		}
+		} else {
 
-		if (!onDelay) {
-			if (idx < moveset.Length) {
-				switch (moveset [idx].act) {
-				case "up":
-					{
-						if (!targetSet) {
-							target = new Vector3 (transform.position.x, transform.position.y + moveset [idx].distance,
-								transform.position.z);
-							targetSet = true;
-						} 
-
-						if (Vector3.Distance (transform.position, target) <= distanceTreshold) {
-							transform.position = target;
-							movement.setMove (0, 1, false);
-							targetSet = false;
-							StartCoroutine (Wait (moveset [idx].delay));
-							idx++;
-						} else {
-							transform.position = Vector3.MoveTowards (transform.position,
-								target, moveSpeed * Time.deltaTime);
-							movement.setMove (0, 1, true);
-						}	
-						break;
-					}
-
-				case "down":
-					{
-						if (!targetSet) {
-							target = new Vector3 (transform.position.x, transform.position.y - moveset [idx].distance,
-								transform.position.z);
-							targetSet = true;
-						} 
-
-						if (Vector3.Distance (transform.position, target) <= distanceTreshold) {
-							transform.position = target;
-							movement.setMove (0, 1, false);
-							targetSet = false;
-							StartCoroutine (Wait (moveset [idx].delay));
-							idx++;
-						} else {
-							transform.position = Vector3.MoveTowards (transform.position,
-								target, moveSpeed * Time.deltaTime);
-							movement.setMove (0, -1, true);
-						}	
-						break;
-					}
-
-				case "right":
-					{
-						if (!targetSet) {
-							target = new Vector3 (transform.position.x + moveset [idx].distance, transform.position.y,
-								transform.position.z);
-							targetSet = true;
-						} 
-
-						if (Vector3.Distance (transform.position, target) <= distanceTreshold) {
-							transform.position = target;
-							movement.setMove (1, 0, false);
-							targetSet = false;
-							StartCoroutine (Wait (moveset [idx].delay));
-							idx++;
-						} else {
-							transform.position = Vector3.MoveTowards (transform.position,
-								target, moveSpeed * Time.deltaTime);
-							movement.setMove (1, 0, true);
-						}	
-						break;
-					}
-
-				case "left":
-					{
-						if (!targetSet) {
-							target = new Vector3 (transform.position.x - moveset [idx].distance, transform.position.y,
-								transform.position.z);
-							targetSet = true;
-						} 
-
-						if (Vector3.Distance (transform.position, target) <= distanceTreshold) {
-							movement.setMove (-1, 0, false);
-							targetSet = false;
-							StartCoroutine (Wait (moveset [idx].delay));
-							idx++;
-						} else {
-							transform.position = Vector3.MoveTowards (transform.position,
-								target, moveSpeed * Time.deltaTime);
-							movement.setMove (-1, 0, true);
-						}	
-						break;
-					}
-
-				case "rotate":
-					{
-						sprite.transform.rotation = initRot;
-						if (!angleSet) {
-							angle = Quaternion.Euler (transform.eulerAngles.x, transform.eulerAngles.y,
-								transform.eulerAngles.z + moveset [idx].angle);
-							angleSet = true;
-						} 
-
-						if (Quaternion.Angle (transform.rotation, angle) <= angleTreshold) {
-							angleSet = false;
-							transform.rotation = angle;
-							StartCoroutine (Wait (moveset [idx].delay));
-							idx++;
-						} else {
-							transform.rotation = Quaternion.RotateTowards (transform.rotation,
-								angle, rotateSpeed * Time.deltaTime);
-
-							updateSpriteRotation ();
-							
-							counter++;
-						}	
-						break;
-					}
-
+			if (!gameOver) {
+				checkPlayer ();
+			} else {
+				if (Input.GetKeyDown (KeyCode.Space)) {
+					Time.timeScale = 1;
+					SceneManager.LoadScene ("prototype_scene");
 				}
+			}
 
-				if (idx == moveset.Length) {
-					idx = 0;
+			if (!onDelay) {
+				if (idx < moveset.Length) {
+					switch (moveset [idx].act) {
+					case "up":
+						{
+							if (!targetSet) {
+								target = new Vector3 (transform.position.x, transform.position.y + moveset [idx].distance,
+									transform.position.z);
+								targetSet = true;
+							} 
+
+							if (Vector3.Distance (transform.position, target) <= distanceTreshold) {
+								transform.position = target;
+								movement.setMove (0, 1, false);
+								targetSet = false;
+								StartCoroutine (Wait (moveset [idx].delay));
+								idx++;
+							} else {
+								transform.position = Vector3.MoveTowards (transform.position,
+									target, moveSpeed * Time.deltaTime);
+								movement.setMove (0, 1, true);
+							}	
+							break;
+						}
+
+					case "down":
+						{
+							if (!targetSet) {
+								target = new Vector3 (transform.position.x, transform.position.y - moveset [idx].distance,
+									transform.position.z);
+								targetSet = true;
+							} 
+
+							if (Vector3.Distance (transform.position, target) <= distanceTreshold) {
+								transform.position = target;
+								movement.setMove (0, 1, false);
+								targetSet = false;
+								StartCoroutine (Wait (moveset [idx].delay));
+								idx++;
+							} else {
+								transform.position = Vector3.MoveTowards (transform.position,
+									target, moveSpeed * Time.deltaTime);
+								movement.setMove (0, -1, true);
+							}	
+							break;
+						}
+
+					case "right":
+						{
+							if (!targetSet) {
+								target = new Vector3 (transform.position.x + moveset [idx].distance, transform.position.y,
+									transform.position.z);
+								targetSet = true;
+							} 
+
+							if (Vector3.Distance (transform.position, target) <= distanceTreshold) {
+								transform.position = target;
+								movement.setMove (1, 0, false);
+								targetSet = false;
+								StartCoroutine (Wait (moveset [idx].delay));
+								idx++;
+							} else {
+								transform.position = Vector3.MoveTowards (transform.position,
+									target, moveSpeed * Time.deltaTime);
+								movement.setMove (1, 0, true);
+							}	
+							break;
+						}
+
+					case "left":
+						{
+							if (!targetSet) {
+								target = new Vector3 (transform.position.x - moveset [idx].distance, transform.position.y,
+									transform.position.z);
+								targetSet = true;
+							} 
+
+							if (Vector3.Distance (transform.position, target) <= distanceTreshold) {
+								movement.setMove (-1, 0, false);
+								targetSet = false;
+								StartCoroutine (Wait (moveset [idx].delay));
+								idx++;
+							} else {
+								transform.position = Vector3.MoveTowards (transform.position,
+									target, moveSpeed * Time.deltaTime);
+								movement.setMove (-1, 0, true);
+							}	
+							break;
+						}
+
+					case "rotate":
+						{
+							sprite.transform.rotation = initRot;
+							if (!angleSet) {
+								angle = Quaternion.Euler (transform.eulerAngles.x, transform.eulerAngles.y,
+									transform.eulerAngles.z + moveset [idx].angle);
+								angleSet = true;
+							} 
+
+							if (Quaternion.Angle (transform.rotation, angle) <= angleTreshold) {
+								angleSet = false;
+								transform.rotation = angle;
+								StartCoroutine (Wait (moveset [idx].delay));
+								idx++;
+							} else {
+								transform.rotation = Quaternion.RotateTowards (transform.rotation,
+									angle, rotateSpeed * Time.deltaTime);
+
+								updateSpriteRotation ();
+								
+								counter++;
+							}	
+							break;
+						}
+
+					}
+
+					if (idx == moveset.Length) {
+						idx = 0;
+					}
+			
 				}
-		
 			}
 		}
 
@@ -281,11 +302,24 @@ public class Satpam : MonoBehaviour {
 				RaycastHit2D raycastHit = Physics2D.Raycast (transform.position, 
 					player.transform.position - transform.position);
 				if (raycastHit) {
-					if (raycastHit.collider.name == "Player" && !manager.playerIsHiding) {
-						popUpMsg.alpha = 1;
-						popUpTxt.text = GAME_LOST;
-						gameOver = true;
-						Time.timeScale = 0;		
+					if (raycastHit.collider.name == "Player" && !manager.playerIsHiding && !favored) {
+						if (inventory.HaveItem (favoredItemId)) {
+							popUpMsg.alpha = 1;
+							popUpTxt.text = GIVE_ITEM;
+							favored = true;
+
+							sightRight.startColor = Color.red;
+							sightRight.endColor = Color.red;
+							sightLeft.startColor = Color.red;
+							sightLeft.endColor = Color.red;
+							waitingInput = true;
+							Time.timeScale = 0;	
+						} else {
+							popUpMsg.alpha = 1;
+							popUpTxt.text = GAME_LOST;
+							gameOver = true;
+							Time.timeScale = 0;	
+						}
 					}
 
 				}
@@ -298,16 +332,36 @@ public class Satpam : MonoBehaviour {
 	void OnCollisionEnter2D (Collision2D coll) {
 
 		// display popup on player contact and receive key press
-		if (coll.gameObject.tag == "Player") {
-			Debug.Log ("hit player");
-			popUpMsg.alpha = 1;
-			popUpTxt.text = GAME_LOST;
-			gameOver = true;
-			Time.timeScale = 0;		
-		} else {
-			Debug.Log ("hit nothing");
+		if (coll.gameObject.name == "Player" && !manager.playerIsHiding && !favored) {
+			if (inventory.HaveItem (favoredItemId)) {
+				popUpMsg.alpha = 1;
+				popUpTxt.text = GIVE_ITEM;
+				favored = true;
+				waitingInput = true;
+				sightRight.startColor = Color.red;
+				sightRight.endColor = Color.red;
+				sightLeft.startColor = Color.red;
+				sightLeft.endColor = Color.red;
+
+				Time.timeScale = 0;	
+			} else {
+				popUpMsg.alpha = 1;
+				popUpTxt.text = GAME_LOST;
+				gameOver = true;
+				Time.timeScale = 0;	
+			}
 		}
 
+
+	}
+
+	IEnumerator FavorCountdown() {
+		yield return new WaitForSeconds (favorTime);
+		sightRight.startColor = defaultSightColor;
+		sightRight.endColor = defaultSightColor;
+		sightLeft.startColor = defaultSightColor;
+		sightRight.endColor = defaultSightColor;
+		favored = false;
 	}
 
 }

@@ -32,6 +32,7 @@ public class Satpam : MonoBehaviour {
 	private LineRenderer sightRight, sightLeft;
 	private GameObject player;
 	private Text popUpTxt;
+	private LevelManager manager;
 
 	// to be deleted
 	private bool gameOver = false;
@@ -63,6 +64,9 @@ public class Satpam : MonoBehaviour {
 		player = GameObject.FindGameObjectWithTag ("Player");
 
 		popUpTxt = popUpMsg.GetComponentInChildren<Text> ();
+
+		manager = GameObject.Find ("LevelManager").GetComponent<LevelManager> ();
+
 	}
 
 	void LateUpdate() {
@@ -236,25 +240,21 @@ public class Satpam : MonoBehaviour {
 		hit = Physics2D.Raycast(transform.position, DirFromAngle(curAngle, true), fovRad);
 
 		if (hit) {
-			Debug.Log ("sight1 hit " + hit.collider.gameObject.name);
 			hitPoint = new Vector3 (hit.point.x, hit.point.y, 0);
 			sightRight.SetPosition (0, transform.position);
 			sightRight.SetPosition (1, hitPoint);
 
 		} else {
-			Debug.Log ("sight1 hit nothing");
 			sightRight.SetPosition (0, transform.position);
 			sightRight.SetPosition (1, transform.position + DirFromAngle(curAngle,true));
 		}
 		curAngle = transform.eulerAngles.z + fovAngle / 2;
 		hit = Physics2D.Raycast(transform.position, DirFromAngle(curAngle, true), fovRad);
 		if (hit) {
-			Debug.Log ("sight2 hit " + hit.collider.gameObject.name);
 			hitPoint = new Vector3 (hit.point.x, hit.point.y, 0);
 			sightLeft.SetPosition (0, transform.position);
 			sightLeft.SetPosition (1, hitPoint);
 		} else {
-			Debug.Log ("sight2 hit nothing");
 			sightLeft.SetPosition (0, transform.position);
 			sightLeft.SetPosition (1, transform.position + DirFromAngle(curAngle,true));	
 		}
@@ -281,22 +281,33 @@ public class Satpam : MonoBehaviour {
 				RaycastHit2D raycastHit = Physics2D.Raycast (transform.position, 
 					player.transform.position - transform.position);
 				if (raycastHit) {
-					if (raycastHit.collider.name == "Player") {
-						Debug.Log ("hit player");
+					if (raycastHit.collider.name == "Player" && !manager.playerIsHiding) {
 						popUpMsg.alpha = 1;
 						popUpTxt.text = GAME_LOST;
 						gameOver = true;
-						Time.timeScale = 0;				
-					} else {
-						Debug.Log ("hit " + raycastHit.collider.name);
+						Time.timeScale = 0;		
 					}
 
-				} else {
-					Debug.Log ("hit nothing");
 				}
 			}
 
 		}
 	}
 		
+	// When touched by player 
+	void OnCollisionEnter2D (Collision2D coll) {
+
+		// display popup on player contact and receive key press
+		if (coll.gameObject.tag == "Player") {
+			Debug.Log ("hit player");
+			popUpMsg.alpha = 1;
+			popUpTxt.text = GAME_LOST;
+			gameOver = true;
+			Time.timeScale = 0;		
+		} else {
+			Debug.Log ("hit nothing");
+		}
+
+	}
+
 }

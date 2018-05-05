@@ -12,6 +12,7 @@ public class Sight : MonoBehaviour {
 	private bool game_lost;				// true when goal already done
 	private bool act_button_pressed;	// true if space pressed
 	private Text popup_text;			// text displayed on message display
+	private LevelManager manager;
 
 	// const strings
 	private const string GAME_LOST = "You got caught! Press space to restart.";
@@ -23,6 +24,7 @@ public class Sight : MonoBehaviour {
 		// initialize variable
 		popup_text = popup_message.GetComponentInChildren<Text> ();
 		game_lost = false;
+		manager = GameObject.Find ("LevelManager").GetComponent<LevelManager> ();
 
 	}
 	
@@ -41,7 +43,7 @@ public class Sight : MonoBehaviour {
 	void OnTriggerEnter2D (Collider2D coll) {
 	
 		// display popup on player contact and receive key press
-		if (coll.gameObject.tag == "Player" && !game_lost) {
+		if (coll.gameObject.tag == "Player" && !game_lost && !manager.playerIsHiding) {
 			Debug.Log ("got player");
 			Debug.DrawRay (transform.parent.transform.position, coll.transform.position - transform.parent.transform.position, Color.red, 1000, true);
 			GetComponent<EdgeCollider2D> ().enabled = false;

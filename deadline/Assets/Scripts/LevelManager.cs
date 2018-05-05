@@ -9,6 +9,7 @@ public class LevelManager : MonoBehaviour {
 	public CanvasGroup popUpMsg;
 	public Text popUpTxt;
 	public bool allowPlayerMovement = true;
+	public CanvasGroup Fader;
 
 	// Use this for initialization
 	void Start () {
@@ -19,6 +20,10 @@ public class LevelManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		
+	}
+
+	public void FadeIn() {
 		
 	}
 

@@ -90,10 +90,7 @@ public class LockpickPuzzle : MonoBehaviour {
 		    lockpick.transform.position.x < (lockpick_init.x + win_treshold)) {
 			source_door.SetActive (false);
 		}
-
-		Debug.Log (lockpick.transform.position.x + " between " + (lockpick_init.x - win_treshold) + " and " +
-			(lockpick_init.x + win_treshold));
-
+			
 		source_player.GetComponent<PlayerMovement> ().speed = temp_player_speed;
 		lockpick.position = lockpick_init;
 		transform.position = initPos;

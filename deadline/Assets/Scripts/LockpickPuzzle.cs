@@ -88,7 +88,7 @@ public class LockpickPuzzle : MonoBehaviour {
 		puzzle_started = false;
 		if (lockpick.transform.position.x > (lockpick_init.x - win_treshold) &&
 		    lockpick.transform.position.x < (lockpick_init.x + win_treshold)) {
-			source_door.SetActive (false);
+			Destroy (source_door);
 		}
 			
 		source_player.GetComponent<PlayerMovement> ().speed = temp_player_speed;

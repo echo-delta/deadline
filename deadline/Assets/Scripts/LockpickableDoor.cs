@@ -13,9 +13,11 @@ public class LockpickableDoor : MonoBehaviour {
 	private bool puzzle_started;		// puzzle play status
 	private Text popup_text;			// text displayed on message display
 	private float player_speed;			// saved to be returned after puzzle
+	private InventoryManager inventory;
 
 	// const strings
 	private const string LOCKPICK = "Press E to lockpick";
+	private const string OPEN = "Press E to open door using key";
 
 	// Use this for initialization
 	void Start () {
@@ -24,6 +26,7 @@ public class LockpickableDoor : MonoBehaviour {
 		act_button_pressed = false;
 		puzzle_started = false;
 		popup_text = popup_message.GetComponentInChildren<Text> ();
+		inventory = GameObject.Find ("InventoryManager").GetComponent<InventoryManager> ();
 
 	}
 	
@@ -44,12 +47,21 @@ public class LockpickableDoor : MonoBehaviour {
 		// display popup on player contact and receive key press
 		if (coll.gameObject.tag == "Player" && !puzzle_started) {
 			popup_message.alpha = 1;
-			popup_text.text = LOCKPICK;
+			if (inventory.HaveItem (1)) {
+				popup_text.text = OPEN;
+			} else {
+				popup_text.text = LOCKPICK;
+			}
 
 			if (act_button_pressed) {
-				popup_message.alpha = 0;
-				puzzle_started = true;
-				lockpick_puzzle.GetComponent<LockpickPuzzle> ().StartPuzzle (gameObject, coll.gameObject);
+				if (inventory.HaveItem (1)) {
+					popup_message.alpha = 0;
+					Destroy (gameObject);
+				} else {
+					popup_message.alpha = 0;
+					puzzle_started = true;
+					lockpick_puzzle.GetComponent<LockpickPuzzle> ().StartPuzzle (gameObject, coll.gameObject);
+				}
 			}
 		}
 	

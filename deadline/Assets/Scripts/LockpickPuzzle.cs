@@ -52,6 +52,8 @@ public class LockpickPuzzle : MonoBehaviour {
 	// start puzzle
 	public void StartPuzzle (GameObject door, GameObject player) {
 
+		manager.inGameMenu.alpha = 0.5f;
+
 		source_door = door;
 		source_player = player;
 
@@ -91,7 +93,7 @@ public class LockpickPuzzle : MonoBehaviour {
 	// end puzzle
 	void EndPuzzle() {
 		manager.allowPlayerMovement = true;
-
+		manager.inGameMenu.alpha = 1;
 		puzzle_started = false;
 		if (lockpick.transform.position.x > (lockpick_init.x - win_treshold) &&
 		    lockpick.transform.position.x < (lockpick_init.x + win_treshold)) {

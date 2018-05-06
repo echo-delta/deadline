@@ -18,6 +18,7 @@ public class PauseButton : MonoBehaviour {
 	}
 
 	public void displayPauseMenu() {
+		AudioListener.pause = true;
 		Time.timeScale = 0;
 		pauseMenu.SetActive (true);
 

@@ -15,7 +15,7 @@ public class ResumeButton : MonoBehaviour {
 	}
 
 	public void resumeGame() {
-
+		AudioListener.pause = false;
 		Time.timeScale = 1;
 		gameObject.transform.parent.gameObject.SetActive (false);
 

@@ -46,8 +46,8 @@ public class Satpam : MonoBehaviour {
 	// to be deleted
 	private bool gameOver = false;
 
-	private const string GAME_LOST = "You got caught! Press space to restart.";
-	private const string GIVE_ITEM = "You used the donut to stall the guard! Press space to continue.";
+	private const string GAME_LOST = "You got caught! \nPress space to return to menu.";
+	private const string GIVE_ITEM = "You used the donut to stall the guard! \nPress space to continue.";
 
 	int counter = 0;
 	// Use this for initialization
@@ -93,6 +93,7 @@ public class Satpam : MonoBehaviour {
 		if (waitingInput) {
 			if (Input.GetKeyDown(KeyCode.Space)) {
 				waitingInput = false;
+				manager.EnableInGameUI ();
 				popUpMsg.alpha = 0;
 				Time.timeScale = 1;
 				inventory.RemoveItem (favoredItemId);
@@ -105,7 +106,7 @@ public class Satpam : MonoBehaviour {
 			} else {
 				if (Input.GetKeyDown (KeyCode.Space)) {
 					Time.timeScale = 1;
-					SceneManager.LoadScene ("prototype_scene");
+					SceneManager.LoadScene ("mainmenu");
 				}
 			}
 
@@ -314,7 +315,7 @@ public class Satpam : MonoBehaviour {
 					player.transform.position - transform.position);
 				if (raycastHit) {
 					if (raycastHit.collider.name == "Player" && !manager.playerIsHiding && !favored) {
-						
+						manager.DisableInGameUI ();
 						if (inventory.HaveItem (favoredItemId)) {
 							if (audioSource.isPlaying) audioSource.Stop ();
 							audioSource.PlayOneShot (bribe);
@@ -347,10 +348,11 @@ public class Satpam : MonoBehaviour {
 	}
 		
 	// When touched by player 
-	void OnCollisionEnter2D (Collision2D coll) {
+	public void TouchEvent () {
 
 		// display popup on player contact and receive key press
-		if (coll.gameObject.name == "Player" && !manager.playerIsHiding && !favored) {
+		if (!manager.playerIsHiding && !favored) {
+			manager.DisableInGameUI ();
 			if (inventory.HaveItem (favoredItemId)) {
 				if (audioSource.isPlaying) audioSource.Stop ();
 				audioSource.PlayOneShot (bribe);

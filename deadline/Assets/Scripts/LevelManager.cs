@@ -14,14 +14,17 @@ public class LevelManager : MonoBehaviour {
 	public CanvasGroup fader;
 	public GameObject lockpickPuzzle;
 	public GameObject player;
+	public CanvasGroup inGameMenu;
+	public CanvasGroup inGameUI;
 
-	private bool fading = false;
-	private bool warpSequence = false;
+	//private bool warpSequence = false;
 
 	// Use this for initialization
 	void Start () {
 
 		popUpTxt = popUpMsg.GetComponentInChildren<Text> ();
+		fader.interactable = false;
+		fader.gameObject.SetActive (false);
 
 	}
 	
@@ -32,7 +35,8 @@ public class LevelManager : MonoBehaviour {
 
 	public IEnumerator Warp(Vector3 target) {
 		allowPlayerMovement = false;
-		warpSequence = true;
+		//warpSequence = true;
+		fader.gameObject.SetActive (true);
 		while (fader.alpha < 1) {
 			fader.alpha += Time.deltaTime / 2 * fadeSpeed;
 			yield return null;
@@ -44,7 +48,18 @@ public class LevelManager : MonoBehaviour {
 			fader.alpha -= Time.deltaTime / 2 * fadeSpeed;
 			yield return null;
 		}
+		fader.gameObject.SetActive (false);
 		allowPlayerMovement = true;
+	}
+
+	public void DisableInGameUI() {
+		inGameUI.interactable = false;
+		inGameUI.alpha = 0;
+	}
+
+	public void EnableInGameUI() {
+		inGameUI.interactable = true;
+		inGameUI.alpha = 1;
 	}
 
 }

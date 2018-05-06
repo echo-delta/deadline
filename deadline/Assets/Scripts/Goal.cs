@@ -7,23 +7,25 @@ using UnityEngine.UI;
 
 public class Goal : MonoBehaviour {
 
-	public CanvasGroup popup_message;	// message display
-
+	private CanvasGroup popup_message;	// message display
 	private bool act_button_pressed;	// true when action button is pressed
 	private bool goal_done;				// true when goal already done
 	private Text popup_text;			// text displayed on message display
+	private LevelManager manager;
 
 	// const strings
 	private const string GOAL_ACT = "Press E to handle your work!";
-	private const string GOAL_DONE = "Homework handled! Press Space to restart.";
+	private const string GOAL_DONE = "Homework handled! Press Space to return to menu.";
 
 	// Use this for initialization
 	void Start () {
 
 		// initialize variable
 		act_button_pressed = false;
-		popup_text = popup_message.GetComponentInChildren<Text> ();
 		goal_done = false;
+		manager = GameObject.Find ("LevelManager").GetComponent<LevelManager> ();
+		popup_message = manager.popUpMsg;
+		popup_text = manager.popUpTxt;
 
 	}
 	
@@ -39,8 +41,7 @@ public class Goal : MonoBehaviour {
 
 		// restart game on buttonpress
 		if (Input.GetKeyDown (KeyCode.Space) && goal_done) {
-			Time.timeScale = 1;
-			SceneManager.LoadScene ("prototype_scene");
+			SceneManager.LoadScene ("mainmenu");
 		}
 
 	}
@@ -57,6 +58,8 @@ public class Goal : MonoBehaviour {
 				popup_text.text = GOAL_DONE;
 				goal_done = true;
 				Time.timeScale = 0;
+				manager.allowPlayerMovement = false;
+				manager.DisableInGameUI();
 			}
 		}
 
@@ -69,12 +72,6 @@ public class Goal : MonoBehaviour {
 			popup_message.alpha = 0;
 		}
 
-	}
-
-	// diasble popup function
-	IEnumerator DisablePopUp(int sec) {
-		yield return new WaitForSeconds (sec);
-		popup_message.alpha = 0;
 	}
 
 }

@@ -4,11 +4,10 @@ using UnityEngine;
 
 public class SatpamSprite: MonoBehaviour {
 
-	private int x, y;					// used for movement vector
 	private Animator anim;
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 
 		// initialize variables
 		anim = GetComponent<Animator> ();
@@ -24,6 +23,14 @@ public class SatpamSprite: MonoBehaviour {
 		anim.SetFloat ("input_x", x);
 		anim.SetFloat ("input_y", y);
 		anim.SetBool ("iswalking", iswalking);
+	}
+
+	void OnCollisionEnter2D (Collision2D coll) {
+
+		if (coll.gameObject.name == "Player") {
+			transform.parent.GetComponent<Satpam> ().TouchEvent ();
+		}
+
 	}
 
 }

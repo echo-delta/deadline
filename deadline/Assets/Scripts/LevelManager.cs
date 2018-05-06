@@ -41,7 +41,7 @@ public class LevelManager : MonoBehaviour {
 			fader.alpha += Time.deltaTime / 2 * fadeSpeed;
 			yield return null;
 		}
-		player.transform.position = target;
+		player.transform.position = new Vector3(target.x, target.y, player.transform.position.z);
 		player.GetComponent<PlayerMovement> ().ResetPlayerSprite ();
 		Camera.main.transform.position = target;
 		while (fader.alpha > 0) {

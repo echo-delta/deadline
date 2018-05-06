@@ -304,7 +304,11 @@ public class Satpam : MonoBehaviour {
 
 	void checkPlayer() {
 		float angle = 0;
+		if (gameObject.name == "Satpam1") {
+			Debug.Log (Vector3.Distance (transform.position, player.transform.position) + " " + fovRad);
+		}
 		if (Vector3.Distance (transform.position, player.transform.position) < fovRad) {
+			Debug.Log (gameObject.name + " ");
 			Vector3 direction = player.transform.position - transform.position;
 			angle = Vector3.Angle (direction, transform.up);
 
